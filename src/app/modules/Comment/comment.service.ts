@@ -57,23 +57,35 @@ const getAllCommentsFromDB = async (query: Record<string, unknown>) => {
   } else if (sortBy === "oldest") {
     sort = { createdAt: 1 };
   } else if (sortBy === "mostLiked") {
-    sort = { likeCount: -1, createdAt: -1 };
+    sort = { likeCount: -1, createdAt:  -1 };
   } else if (sortBy === "mostDisliked") {
     sort = { dislikeCount: -1, createdAt: -1 };
   }
 
-  // Aggregate pipeline for advanced sorting with counts
   const comments = await Comment.aggregate([
     { $match: filter },
     {
       $addFields: {
         likeCount: { $size: "$likes" },
-        dislikeCount: { $size: "$dislikes" },
+        dislikeCount:  { $size: "$dislikes" },
       },
     },
     { $sort: sort },
     { $skip: skip },
     { $limit: limitNumber },
+    {
+      $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "parentComment",
+        as: "replies",
+      },
+    },
+    {
+      $addFields: {
+        replyCount: { $size: "$replies" },
+      },
+    },
     {
       $lookup: {
         from: "users",
@@ -83,7 +95,7 @@ const getAllCommentsFromDB = async (query: Record<string, unknown>) => {
       },
     },
     {
-      $unwind: "$userDetails",
+      $unwind:  "$userDetails",
     },
     {
       $project: {
@@ -92,6 +104,7 @@ const getAllCommentsFromDB = async (query: Record<string, unknown>) => {
         dislikes: 1,
         likeCount: 1,
         dislikeCount: 1,
+        replyCount: 1,
         parentComment: 1,
         createdAt: 1,
         updatedAt: 1,
@@ -102,13 +115,13 @@ const getAllCommentsFromDB = async (query: Record<string, unknown>) => {
     },
   ]);
 
-  const total = await Comment.countDocuments(filter);
+  const total = await Comment. countDocuments(filter);
 
   return {
     data: comments,
     meta: {
       page: pageNumber,
-      limit: limitNumber,
+      limit:  limitNumber,
       total,
       totalPages: Math.ceil(total / limitNumber),
     },
@@ -181,13 +194,21 @@ const deleteCommentFromDB = async (id: string, userId: string) => {
     );
   }
 
-  const result = await Comment.findByIdAndUpdate(
-    id,
-    { isDeleted: true },
-    { new: true }
-  );
+  // Check if this is a parent comment (has replies)
+  if (!comment.parentComment) {
+    // This is a parent comment - delete it and all its replies
+    await Comment.deleteMany({ 
+      $or: [
+        { _id: id },
+        { parentComment: id }
+      ]
+    });
+  } else {
+    // This is a reply - only delete this specific reply
+    await Comment.findByIdAndDelete(id);
+  }
 
-  return result;
+  return { message: "Comment deleted successfully" };
 };
 
 // Like a comment
