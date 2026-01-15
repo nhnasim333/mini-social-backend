@@ -3,6 +3,7 @@ import AppError from "../../errors/AppError";
 import { TComment } from "./comment.interface";
 import { Comment } from "./comment.model";
 import { Types } from "mongoose";
+import { User } from "../User/user.model";
 
 // Create a new comment
 const createCommentIntoDB = async (
@@ -291,6 +292,22 @@ const getRepliesFromDB = async (
   };
 };
 
+// Get statistics  - total comments, totals likes, totals users
+const getCommentStatisticsFromDB = async () => {
+  const totalComments = await Comment.countDocuments({ parentComment: null });
+  const totalLikes = await Comment.aggregate([
+    { $unwind: "$likes" },
+    { $count: "totalLikes" }
+  ]);
+  const totalUsers = await User.countDocuments({});
+
+  return {
+    totalComments,
+    totalLikes: totalLikes.length > 0 ? totalLikes[0].totalLikes : 0,
+    totalUsers
+  };
+};
+
 export const CommentServices = {
   createCommentIntoDB,
   getAllCommentsFromDB,
@@ -300,4 +317,5 @@ export const CommentServices = {
   likeCommentInDB,
   dislikeCommentInDB,
   getRepliesFromDB,
+  getCommentStatisticsFromDB,
 };

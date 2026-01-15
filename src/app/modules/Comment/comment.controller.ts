@@ -109,6 +109,17 @@ const getReplies = catchAsync(async (req, res) => {
   });
 });
 
+const getCommentStatistics = catchAsync(async (req, res) => {
+  const result = await CommentServices.getCommentStatisticsFromDB();
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Comment statistics retrieved successfully",
+    data: result,
+  });
+});
+
 export const CommentController = {
   createComment,
   getAllComments,
@@ -118,4 +129,5 @@ export const CommentController = {
   likeComment,
   dislikeComment,
   getReplies,
+  getCommentStatistics,
 };

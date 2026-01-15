@@ -17,6 +17,9 @@ router.post(
 // Get all comments
 router.get("/",auth("user", "superAdmin"), CommentController.getAllComments);
 
+// Get comment statistics
+router.get("/statistics", auth("user", "superAdmin"), CommentController.getCommentStatistics);
+
 // Get single comment
 router.get("/:id",auth("user", "superAdmin"), CommentController.getSingleComment);
 
