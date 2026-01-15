@@ -17,7 +17,7 @@ app.use(
   })
 );
 
-app.use("/api", router);
+app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
   res.send(`Techzu Server Running on port ${config.port}`);
