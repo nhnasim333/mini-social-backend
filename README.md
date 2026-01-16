@@ -86,8 +86,8 @@ A robust RESTful API backend for a mini social media platform built with Node.js
 
 ## Live Link
 
-The backend is deployed and can be accessed at: [https://mini-social-backend.onrender.com](https://mini-social-backend.onrender.com)
+The backend is deployed and can be accessed at: [https://mini-social-backend.vercel.app](https://mini-social-backend.vercel.app)
 
 ## API Documentation Postman Collection
 
-You can import the Postman collection for testing the API endpoints from the following link: [Mini Social Backend Postman Collection](https://www.postman.com/nhnasim333/workspace/mini-social-backend/documentation/23142420-4f5f4b1e-1d3b-4f7e-8f3a-5e2b6c9f4e2a)
+You can import the Postman collection for testing the API endpoints from the following link: [Mini Social Backend Postman Collection](https://documenter.getpostman.com/view/31247330/2sBXVhEBFT)
