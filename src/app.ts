@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://mini-social-sepia.vercel.app",
+      "http://localhost:5173",
     ],
     credentials: true,
   })
@@ -20,7 +20,7 @@ app.use(
 app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send(`Techzu Server Running on port ${config.port}`);
+  res.send(`Traffic Inventory System Server Running on port ${config.port}`);
 });
 
 // global error handler middleware
